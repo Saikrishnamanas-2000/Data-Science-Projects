@@ -1,0 +1,47 @@
+# Text to Image Conversion
+from PIL import Image, ImageDraw, ImageFont
+import tkinter as tk
+from tkinter import filedialog, simpledialog, messagebox
+
+def text_to_image():
+    text = simpledialog.askstring("Input", "Enter text to convert to image:")
+    if not text:
+        return
+
+    try:
+        # Try loading a font, fallback to default if unavailable
+        try:
+            font = ImageFont.truetype("arial.ttf", 20)  # Attempt to load TrueType font
+        except IOError:
+            font = ImageFont.load_default()  # Use default font if TrueType fails
+
+        # Calculate the text size
+        text_bbox = font.getbbox(text)  # Get bounding box for the text
+        text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
+
+        # Create an image with white background
+        image = Image.new("RGB", (text_width + 20, text_height + 20), "white")
+        draw = ImageDraw.Draw(image)
+        draw.text((10, 10), text, fill="black", font=font)
+
+        # Save the image
+        save_path = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG Files", "*.png")])
+        if save_path:
+            image.save(save_path)
+            messagebox.showinfo("Success", "Image saved successfully!")
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+# Create the main application window
+root = tk.Tk()
+root.title("Text to Image Converter")
+
+# Add widgets to the window
+tk.Label(root, text="Text to Image Converter", font=("Helvetica", 16)).pack(pady=10)
+tk.Button(root, text="Convert Text to Image", command=text_to_image, font=("Helvetica", 14)).pack(pady=20)
+
+# Set the window size
+root.geometry("300x200")
+
+# Run the main application loop
+root.mainloop()
