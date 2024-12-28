@@ -1,0 +1,34 @@
+# IMAGE TO TEXT CONVERSION
+from PIL import Image
+import pytesseract
+import tkinter as tk
+from tkinter import filedialog, messagebox
+
+# Path of the Image
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+def extract_text():
+    file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp;*.tiff")])
+    if file_path:
+        try:
+            text = pytesseract.image_to_string(Image.open(file_path))
+            show_text(text)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+def show_text(text):
+    text_window = tk.Toplevel(root)
+    text_window.title("Extracted Text")
+    text_box = tk.Text(text_window, wrap=tk.WORD, height=15, width=50)
+    text_box.insert("1.0", text)
+    text_box.pack(expand=True, fill=tk.BOTH)
+    text_box.config(state="disabled")
+
+root = tk.Tk()
+root.title("Image to Text")
+
+tk.Label(root, text="Image to Text Reader", font=("Helvetica", 16)).pack(pady=10)
+tk.Button(root, text="Select Image", command=extract_text, font=("Helvetica", 14)).pack(pady=20)
+
+root.geometry("300x200")
+root.mainloop()
